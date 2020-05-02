@@ -8,8 +8,8 @@ objcopy := rust-objcopy --binary-architecture=riscv64
 
 .PHONY: kernel build clean qemu run env
 
-export USER_IMG = ../usr/rust/target/$(target)/debug/hello_world
-# export USER_IMG = ../usr/rust/target/riscv64-rust/debug/hello_world
+# export USER_IMG = ../usr/rust/target/$(target)/debug/hello_world
+export USER_IMG = ../usr/build/riscv64.img
 
 env:
 	cargo install cargo-binutils

@@ -4,6 +4,6 @@
     .global _user_img_start
     .global _user_img_end
 _user_img_start:
-    .incbin "../usr/rust/target/riscv64imac-unknown-none-elf/debug/hello_world"
+    .incbin "../usr/build/riscv64.img"
 _user_img_end:
 

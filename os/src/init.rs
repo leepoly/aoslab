@@ -33,6 +33,7 @@ pub extern "C" fn rust_main() -> ! {
     //     asm!("ebreak"::::"volatile");
     // }
     // panic!("end of rust_main");
+    crate::fs::init();
     crate::process::init();
     crate::timer::init();
     crate::process::run();
