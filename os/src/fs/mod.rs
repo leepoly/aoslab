@@ -4,6 +4,7 @@ use lazy_static::*;
 use rcore_fs::vfs::*;
 use rcore_fs_sfs::SimpleFileSystem;
 use alloc::{ sync::Arc, vec::Vec };
+pub mod stdio;
 
 lazy_static! {
     pub static ref ROOT_INODE: Arc<dyn INode> = {

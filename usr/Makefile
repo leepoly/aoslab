@@ -24,7 +24,7 @@ rust:
 $(sfsimg): rcore-fs-fuse rust
 	@rcore-fs-fuse --fs sfs $@ $(out_dir) zip
 
-user_img: $(sfsimg)
+user_img: $(sfsimg) # generate image
 
 clean:
 	@rm -rf build/

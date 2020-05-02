@@ -18,12 +18,12 @@ pub extern "C" fn rust_main() -> ! {
         ((end as usize - KERNEL_BEGIN_VADDR + KERNEL_BEGIN_PADDR) >> 12) + 1,
         PHYSICAL_MEMORY_END >> 12
     );
-    crate::interrupt::init();
-
     crate::memory::init(
         ((end as usize - KERNEL_BEGIN_VADDR + KERNEL_BEGIN_PADDR) >> 12) + 1,
         PHYSICAL_MEMORY_END >> 12
     );
+    // init memory before interuption, because some int depend on memory mapping
+    crate::interrupt::init();
     // dynamic_allocating_test();
     // write_readonly_test();
     // execute_unexecutable_test();

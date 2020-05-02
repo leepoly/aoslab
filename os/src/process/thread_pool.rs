@@ -6,13 +6,13 @@ use crate::alloc::{
 };
 use crate::process::Tid;
 
-struct ThreadInfo {
-    status: Status,
-    thread: Option<Box<Thread>>,
+pub struct ThreadInfo {
+    pub status: Status,
+    pub thread: Option<Box<Thread>>,
 }
 
 pub struct ThreadPool {
-    threads: Vec<Option<ThreadInfo>>,
+    pub threads: Vec<Option<ThreadInfo>>,
     scheduler: Box<dyn Scheduler>,
 }
 
@@ -78,5 +78,11 @@ impl ThreadPool {
     pub fn exit(&mut self, tid: Tid) {
         self.threads[tid] = None;
         self.scheduler.exit(tid);
+    }
+
+    pub fn wakeup(&mut self, tid: Tid) {
+        let proc = self.threads[tid].as_mut().expect("thread not exist when waking up");
+        proc.status = Status::Ready;
+        self.scheduler.push(tid);
     }
 }
