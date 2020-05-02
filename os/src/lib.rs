@@ -16,3 +16,4 @@ mod timer;
 mod consts;
 mod memory;
 mod process;
+mod syscall;
