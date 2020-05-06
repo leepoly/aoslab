@@ -19,6 +19,9 @@ use crate::memory::memory_set::{
     attr::MemoryAttr,
 };
 use core::str;
+use crate::fs::file::File;
+use spin::Mutex;
+use alloc::sync::Arc;
 
 #[derive(Clone)]
 pub enum Status {
@@ -32,6 +35,7 @@ pub struct Thread {
     pub context: Context,
     pub kstack: KernelStack,
 	pub wait: Option<Tid>,
+    pub ofile: [Option<Arc<Mutex<File>>>; NOFILE],
 }
 
 impl Thread {
@@ -47,7 +51,8 @@ impl Thread {
             Box::new(Thread {
                 context: Context::new_kernel_thread(entry, kstack_.top(), satp::read().bits()),
                 kstack: kstack_,
-				wait: None
+				wait: None,
+                ofile: [None; NOFILE],
             })
         }
     }
@@ -56,7 +61,8 @@ impl Thread {
         Box::new(Thread {
             context: Context::null(),
             kstack: KernelStack::new_empty(),
-			wait: None
+			wait: None,
+            ofile: [None; NOFILE],
         })
     }
 
@@ -97,13 +103,36 @@ impl Thread {
 
         let kstack = KernelStack::new();
 
-        Box::new(
-            Thread {
-                context: Context::new_user_thread(entry_addr, ustack_top, kstack.top(), vm.token()),
-                kstack: kstack,
-				wait: wait_thread
+        let mut thread = Thread {
+            context: Context::new_user_thread(entry_addr, ustack_top, kstack.top(), vm.token()),
+            kstack: kstack,
+            wait: wait_thread,
+            ofile: [None; NOFILE],
+        };
+
+        for i in 0..3 {
+            thread.ofile[i] = Some(Arc::new(Mutex::new(File::default())));
+        }
+
+        Box::new(thread)
+    }
+
+    pub fn alloc_fd(&mut self) -> i32 {
+        let mut fd = 0;
+        for i in 0usize..NOFILE {
+            if self.ofile[i].is_none() {
+                fd = i;
+                break;
             }
-        )
+        }
+        // let fd = (0usize..NOFILE).find(|&i| self.ofile[i].is_none()).unwrap();
+        self.ofile[fd] = Some(Arc::new(Mutex::new(File::default())));
+        fd as i32
+    }
+
+    pub fn dealloc_fd(&mut self, fd: i32) {
+        assert!(self.ofile[fd as usize].is_some());
+        self.ofile[fd as usize] = None;
     }
 }
 

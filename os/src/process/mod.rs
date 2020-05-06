@@ -104,6 +104,11 @@ pub fn yield_now() {
 pub fn wake_up(tid: Tid) {
     CPU.wake_up(tid);
 }
+
 pub fn current_tid() -> usize {
     CPU.current_tid()
+}
+
+pub fn current_thread_mut() -> &'static mut Thread {
+    CPU.current_thread_mut()
 }
