@@ -11,6 +11,7 @@ riscv = { git = "https://github.com/rcore-os/riscv", features = ["inline-asm"] }
 spin = "0.5.2"
 buddy_system_allocator = "0.3"
 xmas-elf = "0.6"
+bitflags = "1.2"
 rcore-fs = { git = "https://github.com/rcore-os/rcore-fs", rev = "7f5eeac"  }
 rcore-fs-sfs = { git = "https://github.com/rcore-os/rcore-fs", rev = "7f5eeac"  }
 

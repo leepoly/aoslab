@@ -5,7 +5,7 @@ rust_target_dir := rust/target/$(target)/$(mode)
 rust_srcs := $(wildcard $(rust_src_dir)/*.rs)
 rust_targets := $(patsubst $(rust_src_dir)/%.rs, $(rust_target_dir)/%, $(rust_srcs))
 out_dir := build/riscv64
-sfsimg := build/riscv64.img
+sfsimg := build/riscv64.img1
 .PHONY: rcore-fs-fuse rust user_img clean
 
 rcore-fs-fuse:

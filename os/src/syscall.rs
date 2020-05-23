@@ -36,6 +36,7 @@ fn sys_exit(code: usize) {
 fn sys_open(path: *const u8, flags: i32) -> isize {
     let thread = process::current_thread_mut();
     let fd = thread.alloc_fd() as isize;
+    println!("flags in sys_open: {:?}", flags as u32);
     thread.ofile[fd as usize]
         .as_ref()
         .unwrap()

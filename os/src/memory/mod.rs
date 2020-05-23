@@ -1,9 +1,9 @@
 mod frame_allocator;
 use frame_allocator::SEGMENT_TREE_ALLOCATOR as FRAME_ALLOCATOR;
 use riscv::addr::{
-    VirtAddr,
-    PhysAddr,
-    Page,
+    // VirtAddr,
+    // PhysAddr,
+    // Page,
     Frame
 };
 pub mod paging;

@@ -1,7 +1,8 @@
 use alloc::sync::Arc;
-use rcore_fs::vfs::INode;
+use rcore_fs::vfs::{FileType, FsError, INode};
 use rcore_fs_sfs::INodeImpl;
 use crate::fs::ROOT_INODE;
+use bitflags::bitflags;
 
 #[derive(Copy,Clone,Debug)]
 pub enum FileDescriptorType {
@@ -17,6 +18,36 @@ pub struct File {
     writable: bool,
     pub inode: Option<Arc<dyn INode>>,
     offset: usize,
+}
+
+/// Split a `path` str to `(base_path, file_name)`
+fn split_path(path: &str) -> (&str, &str) {
+    let mut split = path.trim_end_matches('/').rsplitn(2, '/');
+    let file_name = split.next().unwrap();
+    let mut dir_path = split.next().unwrap_or(".");
+    if dir_path == "" {
+        dir_path = "/";
+    }
+    (dir_path, file_name)
+}
+
+bitflags! {
+    struct OpenFlags: usize {
+        /// read only
+        const RDONLY = 0;
+        /// write only
+        const WRONLY = 1;
+        /// read write
+        const RDWR = 2;
+        /// create file if it does not exist
+        const CREATE = 1 << 6;
+        /// error if CREATE and the file exists
+        const EXCLUSIVE = 1 << 7;
+        /// truncate file upon open
+        const TRUNCATE = 1 << 9;
+        /// append on each write
+        const APPEND = 1 << 10;
+    }
 }
 
 impl File {
@@ -47,9 +78,25 @@ impl File {
         if (flags & 3) > 0 {
             self.set_writable(true);
         }
-        unsafe {
-            self.inode = Some(ROOT_INODE.lookup(path).unwrap().clone());
-        }
+        println!("access mode {:?}", flags as u32);
+        self.inode = if (flags & 64) > 0 {
+            let (dir_path, file_name) = split_path(&path);
+            // relative to cwd
+            let dir_inode = ROOT_INODE.lookup(dir_path).unwrap();
+            match dir_inode.find(file_name) {
+                Ok(file_inode) => {
+                    Some(file_inode)
+                }
+                Err(FsError::EntryNotFound) => {
+                    Some(dir_inode.create(file_name, FileType::File, flags as u32).unwrap().clone())
+                }
+                Err(e) => None,
+            }
+        } else {
+            Some(ROOT_INODE.lookup(path).unwrap().clone())
+        };
+        // self.inode = Some(ROOT_INODE.lookup(path).unwrap().clone());
+
         self.set_offset(0);
     }
 }

@@ -15,14 +15,16 @@ use user::syscall::{
 };
 
 const BUFFER_SIZE: usize = 20;
-const FILE: &'static str = "temp\0";
+const FILE: &'static str = "temp11\0";
 const TEXT: &'static str = "Hello world!\0";
 
 #[no_mangle]
 pub fn main() -> usize {
-    let write_fd = sys_open(FILE.as_ptr(), O_WRONLY);
+    println!("write54321");
+    let write_fd = sys_open(FILE.as_ptr(), O_WRONLY | O_CREAT);
+    println!("ready to write file temp11");
     sys_write(write_fd as usize, TEXT.as_ptr(), TEXT.len());
-    println!("write to file 'temp' successfully...");
+    println!("write to file 'temp11' successfully...");
     sys_close(write_fd as i32);
 
     let read_fd = sys_open(FILE.as_ptr(), O_RDONLY);

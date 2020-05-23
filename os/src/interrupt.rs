@@ -1,17 +1,17 @@
 use riscv::register::{
     scause::{
-        self,
+        // self,
         Trap,
         Exception,
         Interrupt
     },
-    sepc,
+    // sepc,
     stvec,
     sscratch,
     sstatus
 };
 use crate::timer::{
-    TICKS,
+    // TICKS,
     clock_set_next_event
 };
 use crate::context::TrapFrame;
@@ -117,7 +117,7 @@ fn try_serial() -> bool {
     match super::io::getchar_option() {
         Some(ch) => {
             // 将获取到的字符输入标准输入
-            if (ch == '\r') {
+            if ch == '\r' {
                 crate::fs::stdio::STDIN.push('\n');
             }
             else {

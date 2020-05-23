@@ -4,7 +4,7 @@ use crate::process::Tid;
 use crate::process::structs::*;
 use crate::process::thread_pool::ThreadPool;
 use crate::interrupt::*;
-use crate::context::ContextContent;
+// use crate::context::ContextContent;
 
 pub struct ProcessorInner {
     pool: Box<ThreadPool>,
