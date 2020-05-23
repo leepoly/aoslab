@@ -68,7 +68,7 @@ pub extern "C" fn rust_main(_hart_id: usize, dtb_pa: PhysicalAddress) -> ! {
     fs::init();
 
     start_user_thread("hello_world");
-    start_user_thread("notebook");
+    start_user_thread("user_shell");
 
     PROCESSOR.get().run()
 }

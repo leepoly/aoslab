@@ -2,9 +2,9 @@
 #![no_main]
 
 #[macro_use]
-extern crate user_lib;
+extern crate user;
 
-use user_lib::console::*;
+use user::console::*;
 
 #[no_mangle]
 pub fn main() -> ! {

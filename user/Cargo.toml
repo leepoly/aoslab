@@ -1,5 +1,5 @@
 [package]
-name = "user_lib"
+name = "user"
 version = "0.1.0"
 authors = ["涂轶翔 <tyx17@mails.tsinghua.edu.cn>", "赵成钢 <zhaocg17@mails.tsinghua.edu.cn>"]
 edition = "2018"

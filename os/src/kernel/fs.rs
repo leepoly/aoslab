@@ -41,3 +41,24 @@ pub(super) fn sys_write(fd: usize, buffer: *mut u8, size: usize) -> SyscallResul
     }
     SyscallResult::Proceed(-1)
 }
+
+pub(super) fn sys_open(path: *const u8, flags: u32) -> SyscallResult {
+    let thread = process::current_thread_mut();
+    let fd = thread.alloc_fd() as isize;
+    println!("flags in sys_open: {:?}", flags as u32);
+    thread.ofile[fd as usize]
+        .as_ref()
+        .unwrap()
+        .lock()
+        .open_file(unsafe { from_cstr(path) }, flags);
+
+    SyscallResult::Proceed(fd)
+}
+
+pub(super) fn sys_close(fd: i32) -> SyscallResult {
+    let thread = process::current_thread_mut();
+    assert!(thread.ofile[fd as usize].is_some());
+    thread.dealloc_fd(fd);
+
+    SyscallResult::Proceed(0)
+}

@@ -6,6 +6,9 @@ pub const STDOUT: usize = 1;
 const SYSCALL_READ: usize = 63;
 const SYSCALL_WRITE: usize = 64;
 const SYSCALL_EXIT: usize = 93;
+const SYSCALL_OPEN: usize = 56;
+const SYSCALL_CLOSE: usize = 57;
+const SYSCALL_EXEC: usize = 221;
 
 /// 将参数放在对应寄存器中，并执行 `ecall`
 fn syscall(id: usize, arg0: usize, arg1: usize, arg2: usize) -> isize {
@@ -21,23 +24,39 @@ fn syscall(id: usize, arg0: usize, arg1: usize, arg2: usize) -> isize {
     ret
 }
 
-/// 读取字符
-pub fn sys_read(fd: usize, buffer: &mut [u8]) -> isize {
-    loop {
-        let ret = syscall(SYSCALL_READ, fd, buffer as *const [u8] as *const u8 as usize, buffer.len());
-        if ret > 0 {
-            return ret;
-        }
-    }
+// /// 读取字符
+// pub fn sys_read(fd: usize, buffer: &mut [u8]) -> isize {
+//     loop {
+//         let ret = syscall(SYSCALL_READ, fd, buffer as *const [u8] as *const u8 as usize, buffer.len());
+//         if ret > 0 {
+//             return ret;
+//         }
+//     }
+// }
+
+pub fn sys_read(fd: usize, buffer: &mut [u8], len: usize) -> isize {
+    syscall(SYSCALL_READ, fd, buffer as *const [u8] as *const u8 as usize, len)
 }
 
 /// 打印字符串
-pub fn sys_write(fd: usize, buffer: &[u8]) -> isize {
-    syscall(SYSCALL_WRITE, fd, buffer as *const [u8] as *const u8 as usize, buffer.len())
+pub fn sys_write(fd: usize, buffer: &[u8], len: usize) -> isize {
+    syscall(SYSCALL_WRITE, fd, buffer as *const [u8] as *const u8 as usize, len)
 }
 
 /// 退出并返回数值
 pub fn sys_exit(code: isize) -> ! {
     syscall(SYSCALL_EXIT, code as usize, 0, 0);
     unreachable!()
+}
+
+pub fn sys_open(path: *const u8, flags: u32) -> isize {
+    syscall(SYSCALL_OPEN, path as usize, flags as usize, 0)
+}
+
+pub fn sys_close(fd: i32) -> isize {
+    syscall(SYSCALL_CLOSE, fd as usize, 0, 0)
+}
+
+pub fn sys_exec(path: *const u8) {
+    syscall(SYSCALL_EXEC, path as usize, 0, 0);
 }
