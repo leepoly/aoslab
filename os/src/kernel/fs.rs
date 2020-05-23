@@ -42,22 +42,26 @@ pub(super) fn sys_write(fd: usize, buffer: *mut u8, size: usize) -> SyscallResul
     SyscallResult::Proceed(-1)
 }
 
+pub unsafe fn from_cstr(s: *const u8) -> &'static str {
+    use core::{ slice, str };
+    let len = (0usize..).find(|&i| *s.add(i) == 0).unwrap();
+    str::from_utf8(slice::from_raw_parts(s, len)).unwrap()
+}
+
 pub(super) fn sys_open(path: *const u8, flags: u32) -> SyscallResult {
-    let thread = process::current_thread_mut();
+    let thread = PROCESSOR.get().current_thread();
     let fd = thread.alloc_fd() as isize;
     println!("flags in sys_open: {:?}", flags as u32);
-    thread.ofile[fd as usize]
-        .as_ref()
-        .unwrap()
-        .lock()
-        .open_file(unsafe { from_cstr(path) }, flags);
+    let inode = ROOT_INODE.lookup(unsafe { from_cstr(path) }).unwrap().clone();
+
+    thread.inner().descriptors.push(inode);
 
     SyscallResult::Proceed(fd)
 }
 
 pub(super) fn sys_close(fd: i32) -> SyscallResult {
-    let thread = process::current_thread_mut();
-    assert!(thread.ofile[fd as usize].is_some());
+    let thread = PROCESSOR.get().current_thread();
+    assert!(fd < thread.inner().descriptors.len() as i32);
     thread.dealloc_fd(fd);
 
     SyscallResult::Proceed(0)

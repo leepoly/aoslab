@@ -95,6 +95,7 @@ impl Thread {
             inner: Mutex::new(ThreadInner {
                 context: Some(context),
                 sleeping: false,
+                // add alloc_fd operation
                 descriptors: vec![STDIN.clone(), STDOUT.clone()],
             }),
         });
@@ -104,6 +105,19 @@ impl Thread {
 
     pub fn inner(&self) -> spin::MutexGuard<ThreadInner> {
         self.inner.lock()
+    }
+
+    pub fn alloc_fd(&self) -> i32 {
+        let fd = self.inner().descriptors.len();
+        if fd > 16 {
+            return -1
+        }
+        fd as i32
+    }
+
+    pub fn dealloc_fd(&self, fd: i32) {
+        assert!(fd < self.inner().descriptors.len() as i32);
+        self.inner().descriptors.remove(fd as usize);
     }
 }
 
