@@ -67,8 +67,10 @@ pub extern "C" fn rust_main(_hart_id: usize, dtb_pa: PhysicalAddress) -> ! {
     drivers::init(dtb_pa);
     fs::init();
 
+    start_user_thread("writecreate");
     start_user_thread("write");
     start_user_thread("read");
+    start_user_thread("read2");
 
     PROCESSOR.get().run()
 }

@@ -4,6 +4,12 @@ use super::*;
 use crate::fs::*;
 use core::slice::from_raw_parts_mut;
 
+pub const O_RDONLY: u32 = 0;
+pub const O_WRONLY: u32 = 1;
+pub const O_RDWR: u32 = 2;
+pub const O_CREAT: u32 = 64;
+pub const O_APPEND: u32 = 1024;
+
 /// 从指定的文件中读取字符
 ///
 /// 如果缓冲区暂无数据，返回 0；出现错误返回 -1
@@ -52,6 +58,11 @@ pub(super) fn sys_open(path: *const u8, flags: u32) -> SyscallResult {
     let thread = PROCESSOR.get().current_thread();
     let fd = thread.alloc_fd() as isize;
     println!("path {:?} flags in sys_open: {:?}", unsafe { from_cstr(path) }, flags as u32);
+    if flags & O_CREAT > 0 {
+        ROOT_INODE
+            .create(unsafe { from_cstr(path) }, rcore_fs::vfs::FileType::File, 0o666)
+            .expect("failed to create file");
+    }
     let inode = ROOT_INODE.lookup(unsafe { from_cstr(path) }).unwrap().clone();
 
     thread.inner().descriptors.push(inode);

@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "rcore-fs",
+    "rcore-fs-sfs",
+    "rcore-fs-sefs",
+    "rcore-fs-fuse",
+    "rcore-fs-ext2",
+    "rcore-fs-ramfs",
+    "rcore-fs-mountfs",
+    "rcore-fs-devfs",
+    "rcore-fs-hostfs",
+]
+exclude = ["sefs-fuse"]
