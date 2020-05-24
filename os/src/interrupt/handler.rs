@@ -67,8 +67,9 @@ fn breakpoint(context: &mut Context) -> *mut Context {
 /// 处理时钟中断
 fn supervisor_timer(context: &mut Context) -> *mut Context {
     timer::tick();
-    PROCESSOR.get().park_current_thread(context);
-    PROCESSOR.get().prepare_next_thread()
+    context // liyiwei disables preemptive scheduling
+    // PROCESSOR.get().park_current_thread(context);
+    // PROCESSOR.get().prepare_next_thread()
 
 }
 

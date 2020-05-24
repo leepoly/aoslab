@@ -67,13 +67,13 @@ pub extern "C" fn rust_main(_hart_id: usize, dtb_pa: PhysicalAddress) -> ! {
     drivers::init(dtb_pa);
     fs::init();
 
-    start_user_thread("hello_world");
-    start_user_thread("user_shell");
+    start_user_thread("write");
+    start_user_thread("read");
 
     PROCESSOR.get().run()
 }
 
-fn start_user_thread(name: &str) {
+pub fn start_user_thread(name: &str) {
     // 从文件系统中找到程序
     let app = fs::ROOT_INODE.find(name).unwrap();
     // 读取数据

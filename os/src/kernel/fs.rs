@@ -51,7 +51,7 @@ pub unsafe fn from_cstr(s: *const u8) -> &'static str {
 pub(super) fn sys_open(path: *const u8, flags: u32) -> SyscallResult {
     let thread = PROCESSOR.get().current_thread();
     let fd = thread.alloc_fd() as isize;
-    println!("flags in sys_open: {:?}", flags as u32);
+    println!("path {:?} flags in sys_open: {:?}", unsafe { from_cstr(path) }, flags as u32);
     let inode = ROOT_INODE.lookup(unsafe { from_cstr(path) }).unwrap().clone();
 
     thread.inner().descriptors.push(inode);
