@@ -4,11 +4,11 @@ use super::*;
 use crate::fs::*;
 use core::slice::from_raw_parts_mut;
 
-pub const O_RDONLY: u32 = 0;
-pub const O_WRONLY: u32 = 1;
-pub const O_RDWR: u32 = 2;
+// pub const O_RDONLY: u32 = 0;
+// pub const O_WRONLY: u32 = 1;
+// pub const O_RDWR: u32 = 2;
 pub const O_CREAT: u32 = 64;
-pub const O_APPEND: u32 = 1024;
+// pub const O_APPEND: u32 = 1024;
 
 /// 从指定的文件中读取字符
 ///

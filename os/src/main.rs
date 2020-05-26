@@ -8,9 +8,6 @@
 //!   不使用 `main` 函数等全部 Rust-level 入口点来作为程序入口
 #![no_main]
 //!
-//! - `#![deny(missing_docs)]`
-//!   任何没有注释的地方都会产生警告：这个属性用来压榨写实验指导的学长，同学可以删掉了
-#![warn(missing_docs)]
 //! # 一些 unstable 的功能需要在 crate 层级声明后才可以使用
 //!
 //! - `#![feature(alloc_error_handler)]`

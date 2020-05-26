@@ -21,6 +21,7 @@ pub struct SuperBlock {
     /// information for sfs
     pub info: Str32,
     pub current_segment_id: u32,
+    pub next_ino_number: u32,
 }
 
 /// inode (on disk)
@@ -205,15 +206,15 @@ pub type INodeId = BlockId;
 pub const NODEVICE: usize = 100;
 
 /// magic number for sfs
-pub const MAGIC: u32 = 0x2f8dbe2b;
+pub const MAGIC: u32 = 0x2f8dbe2c;
 /// size of block
 pub const BLKSIZE: usize = 1usize << BLKSIZE_LOG2; // 4KB
 /// log2( size of block )
 pub const BLKSIZE_LOG2: u8 = 12;
 /// number of direct blocks in inode
 pub const NDIRECT: usize = 12;
-/// default sfs infomation string
-pub const DEFAULT_INFO: &str = "simple file system";
+/// default lfs infomation string
+pub const DEFAULT_INFO: &str = "log file system";
 /// max length of infomation
 pub const MAX_INFO_LEN: usize = 31;
 /// max length of filename
@@ -224,11 +225,12 @@ pub const MAX_FILE_SIZE: usize = 0xffffffff;
 /// block the superblock lives in
 pub const BLKN_SUPER: BlockId = 0;
 /// location of the root dir inode
-pub const BLKN_ROOT: BlockId = 1;
-/// 1st block of the freemap
-pub const BLKN_FREEMAP: BlockId = 2;
+// pub const BLKN_ROOT: BlockId = 1;
+pub const INO_ROOT: INodeId = 0;
 /// number of bits in a block
 pub const BLKBITS: usize = BLKSIZE * 8;
+/// size of one segment
+pub const SEGMENT_SIZE: usize = 1024 * BLKSIZE;
 /// size of one entry
 pub const ENTRY_SIZE: usize = 4;
 /// number of entries in a block
