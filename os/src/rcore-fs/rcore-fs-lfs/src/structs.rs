@@ -1,7 +1,10 @@
 //! On-disk structures in SFS
 
 use crate::vfs;
-use alloc::str;
+use alloc::{
+    str,
+    collections::BTreeMap,
+};
 
 use core::fmt::{Debug, Error, Formatter};
 use core::mem::{size_of, size_of_val};
@@ -22,6 +25,7 @@ pub struct SuperBlock {
     pub info: Str32,
     pub current_segment_id: u32,
     pub next_ino_number: u32,
+    pub n_segment_capacity: u32,
 }
 
 /// inode (on disk)
@@ -54,6 +58,7 @@ pub trait DeviceINode : Any + Sync + Send{
     fn write_at(&self, _offset: usize, buf: &[u8]) -> vfs::Result<usize>;
 }
 */
+pub type IMapTable = BTreeMap<INodeId, BlockId>;
 
 pub type DeviceINode = dyn vfs::INode;
 
@@ -70,6 +75,10 @@ pub struct DiskEntry {
     pub id: u32,
     /// file name
     pub name: Str256,
+}
+pub struct CheckRegion {
+    pub imaps_blkid: u32,
+    pub inodes_num: u32,
 }
 
 #[repr(C)]
@@ -195,6 +204,8 @@ impl AsBuf for DiskEntry {}
 
 impl AsBuf for u32 {}
 
+impl AsBuf for CheckRegion {}
+
 /*
  * Simple FS (SFS) definitions visible to ucore. This covers the on-disk format
  * and is used by tools that work on SFS volumes, such as mksfs.
@@ -224,6 +235,9 @@ pub const MAX_FNAME_LEN: usize = 255;
 pub const MAX_FILE_SIZE: usize = 0xffffffff;
 /// block the superblock lives in
 pub const BLKN_SUPER: BlockId = 0;
+pub const BLKN_CR: BlockId = 1;
+pub const BLKN_IMAP: BlockId = 2;
+pub const BLKN_SEGMENT: BlockId = 0x100;
 /// location of the root dir inode
 // pub const BLKN_ROOT: BlockId = 1;
 pub const INO_ROOT: INodeId = 0;

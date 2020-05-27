@@ -199,6 +199,7 @@ pub struct PollStatus {
     pub error: bool,
 }
 
+#[derive(Debug)]
 pub struct MMapArea {
     /// Start virtual address
     pub start_vaddr: usize,

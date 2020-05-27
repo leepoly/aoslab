@@ -11,6 +11,7 @@ use alloc::{sync::Arc, vec::Vec};
 use core::any::Any;
 use lazy_static::lazy_static;
 use rcore_fs_sfs::SimpleFileSystem;
+use rcore_fs_lfs::LogFileSystem;
 use spin::Mutex;
 
 mod config;
@@ -33,7 +34,10 @@ lazy_static! {
                 let device = BlockDevice(driver.clone());
                 // 动态分配一段内存空间作为设备 Cache
                 let device_with_cache = Arc::new(BlockCache::new(device, BLOCK_CACHE_CAPACITY));
-                return SimpleFileSystem::open(device_with_cache)
+                // return SimpleFileSystem::open(device_with_cache)
+                //     .expect("failed to open SFS")
+                //     .root_inode();
+                return LogFileSystem::open(device_with_cache)
                     .expect("failed to open SFS")
                     .root_inode();
             }

@@ -2,8 +2,5 @@
 members = [
     "rcore-fs",
     "rcore-fs-sfs",
-    "rcore-fs-fuse",
-    "rcore-fs-devfs",
-    "rcore-fs-hostfs",
+    "rcore-fs-lfs",
 ]
-exclude = ["sefs-fuse"]
