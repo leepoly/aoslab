@@ -23,9 +23,10 @@ pub struct SuperBlock {
     pub unused_blocks: u32,
     /// information for sfs
     pub info: Str32,
-    pub current_segment_id: u32,
+    pub current_seg_id: u32,
+    pub current_seg_size: u32,
     pub next_ino_number: u32,
-    pub n_segment_capacity: u32,
+    pub n_seg_capacity: u32,
 }
 
 /// inode (on disk)

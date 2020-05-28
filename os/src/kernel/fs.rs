@@ -57,13 +57,15 @@ pub unsafe fn from_cstr(s: *const u8) -> &'static str {
 pub(super) fn sys_open(path: *const u8, flags: u32) -> SyscallResult {
     let thread = PROCESSOR.get().current_thread();
     let fd = thread.alloc_fd() as isize;
-    println!("path {:?} flags in sys_open: {:?}", unsafe { from_cstr(path) }, flags as u32);
+    let cstr_path = unsafe { from_cstr(path) };
+    println!("path {:?} flags in sys_open: {:?}", cstr_path, flags as u32);
     if flags & O_CREAT > 0 {
         ROOT_INODE
-            .create(unsafe { from_cstr(path) }, rcore_fs::vfs::FileType::File, 0o666)
+            .create(cstr_path, rcore_fs::vfs::FileType::File, 0o666)
             .expect("failed to create file");
+        println!("created {:?}", cstr_path);
     }
-    let inode = ROOT_INODE.lookup(unsafe { from_cstr(path) }).unwrap().clone();
+    let inode = ROOT_INODE.lookup(cstr_path).unwrap().clone();
 
     thread.inner().descriptors.push(inode);
 

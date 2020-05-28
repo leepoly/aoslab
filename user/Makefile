@@ -26,13 +26,14 @@ endif
 
 # 编译、打包、格式转换、预留空间
 build: dependency
-	# @cargo build --manifest-path=../../rcore-fs/rcore-fs-fuse/Cargo.toml
+	@cargo build
 	@make build -C ../../rcore-fs/
-	# @echo Targets: $(patsubst $(SRC_DIR)/%.rs, %, $(SRC_FILES))
+	@echo Targets: $(patsubst $(SRC_DIR)/%.rs, %, $(SRC_FILES))
 	@rm -rf $(OUT_DIR)
 	@mkdir -p $(OUT_DIR)
 	@cp $(BIN_FILES) $(OUT_DIR)
-	# @dd if=/dev/zero of=$(OUT_DIR)/temp111 bs=1k count=2
+	@mkdir -p $(OUT_DIR)/test
+	@dd if=/dev/zero of=$(OUT_DIR)/test/temp123 bs=1k count=2
 	echo Start making lfs...
 	@./rcore-lfs-fuse --fs lfs $(IMG_FILE) $(OUT_DIR) zip
 	@qemu-img convert -f raw $(IMG_FILE) -O qcow2 $(QCOW_FILE)

@@ -20,9 +20,9 @@ const TEXT: &'static str = "Hello world!\0";
 
 #[no_mangle]
 pub fn main() -> usize {
-    println!("write000");
+    println!("write000111");
     // let write_fd = sys_open(FILE.as_ptr(), O_WRONLY | O_CREAT);
-    let write_fd = sys_open(FILE.as_ptr(), O_WRONLY);
+    let write_fd = sys_open(FILE.as_ptr(), O_WRONLY | O_CREAT);
     println!("ready to write file temp111");
     sys_write(write_fd as usize, TEXT.as_bytes(), TEXT.len());
     println!("write to file 'temp111' successfully...");
