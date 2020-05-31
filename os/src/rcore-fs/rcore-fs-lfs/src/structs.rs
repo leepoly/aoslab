@@ -10,6 +10,8 @@ use core::fmt::{Debug, Error, Formatter};
 use core::mem::{size_of, size_of_val};
 use core::slice;
 use static_assertions::const_assert;
+use spin::RwLock;
+use rcore_fs::dirty::Dirty;
 
 /// On-disk superblock
 #[repr(C)]
@@ -24,9 +26,8 @@ pub struct SuperBlock {
     /// information for sfs
     pub info: Str32,
     pub current_seg_id: u32,
-    pub current_seg_size: u32,
     pub next_ino_number: u32,
-    pub n_seg_capacity: u32,
+    pub n_segment: u32,
 }
 
 /// inode (on disk)
@@ -78,7 +79,7 @@ pub struct DiskEntry {
     pub name: Str256,
 }
 pub struct CheckRegion {
-    pub imaps_blkid: u32,
+    // pub imaps_blkid: u32,
     pub inodes_num: u32,
 }
 
@@ -197,6 +198,25 @@ pub trait AsBuf {
     }
 }
 
+pub struct SummaryEntry {
+    pub inode_id: i32,
+    pub entry_id: i32,
+}
+
+pub struct SegmentMeta {
+    pub size: u32,
+    pub inodes_num: u32,
+    pub unused: u32,
+}
+
+pub struct Segment {
+    /// on-disk segment
+    pub meta: Dirty<SegmentMeta>,
+    pub seg_imap: RwLock<Dirty<IMapTable>>,
+    pub summary_map: RwLock<Dirty<BTreeMap<BlockId, SummaryEntry>>>,
+    // imap: RwLock<BTreeMap<INodeId, INodeImpl>>,
+}
+
 impl AsBuf for SuperBlock {}
 
 impl AsBuf for DiskINode {}
@@ -206,6 +226,10 @@ impl AsBuf for DiskEntry {}
 impl AsBuf for u32 {}
 
 impl AsBuf for CheckRegion {}
+
+impl AsBuf for SummaryEntry {}
+
+impl AsBuf for SegmentMeta {}
 
 /*
  * Simple FS (SFS) definitions visible to ucore. This covers the on-disk format
@@ -237,15 +261,12 @@ pub const MAX_FILE_SIZE: usize = 0xffffffff;
 /// block the superblock lives in
 pub const BLKN_SUPER: BlockId = 0;
 pub const BLKN_CR: BlockId = 1;
-pub const BLKN_IMAP: BlockId = 2;
 pub const BLKN_SEGMENT: BlockId = 0x100;
 /// location of the root dir inode
 // pub const BLKN_ROOT: BlockId = 1;
 pub const INO_ROOT: INodeId = 0;
 /// number of bits in a block
 pub const BLKBITS: usize = BLKSIZE * 8;
-/// size of one segment
-pub const SEGMENT_SIZE: usize = 1024 * BLKSIZE;
 /// size of one entry
 pub const ENTRY_SIZE: usize = 4;
 /// number of entries in a block
@@ -258,6 +279,16 @@ pub const MAX_NBLOCK_DIRECT: usize = NDIRECT;
 pub const MAX_NBLOCK_INDIRECT: usize = NDIRECT + BLK_NENTRY;
 /// max number of blocks with double indirect blocks
 pub const MAX_NBLOCK_DOUBLE_INDIRECT: usize = NDIRECT + BLK_NENTRY + BLK_NENTRY * BLK_NENTRY;
+
+/// size of one segment
+pub const SEGMENT_BLKS: usize = 1024;
+pub const SEGMENT_SIZE: usize = SEGMENT_BLKS * BLKSIZE;
+
+pub const IMAP_PER_SEGMENT_SIZE: usize = BLKSIZE * 2;
+pub const SS_PER_SEGMENT_SIZE: usize = BLKSIZE * 2;
+pub const SEGMENT_META_SIZE: usize = BLKSIZE;
+pub const BLK_DATA_BEGIN: usize = (IMAP_PER_SEGMENT_SIZE + SS_PER_SEGMENT_SIZE + SEGMENT_META_SIZE) / BLKSIZE;
+pub const SEGN_ROOT: usize = 1;
 
 /// file types
 #[repr(u16)]

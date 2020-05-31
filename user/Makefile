@@ -1,4 +1,4 @@
-.PHONY: build
+.PHONY: build, unzip, build-lfs
 
 TARGET      := riscv64imac-unknown-none-elf
 MODE        := debug
@@ -25,6 +25,49 @@ ifeq ($(shell which rcore-fs-fuse),)
 endif
 
 # 编译、打包、格式转换、预留空间
+
+build-sfs: dependency
+	@cargo build
+	@make build -C ../../rcore-fs/
+	@echo Targets: $(patsubst $(SRC_DIR)/%.rs, %, $(SRC_FILES))
+	@rm -rf $(OUT_DIR)
+	@mkdir -p $(OUT_DIR)
+	@cp $(BIN_FILES) $(OUT_DIR)
+	@mkdir -p $(OUT_DIR)/test
+	@dd if=/dev/zero of=$(OUT_DIR)/test/temp123 bs=1k count=2
+	echo Start making sfs...
+	@./rcore-lfs-fuse --fs sfs $(IMG_FILE) $(OUT_DIR) zip
+	@qemu-img convert -f raw $(IMG_FILE) -O qcow2 $(QCOW_FILE)
+	@qemu-img resize $(QCOW_FILE) +1G
+
+random-test: dependency
+	@make build -C ../../rcore-fs/
+	@rm -rf $(OUT_DIR)
+	@python3 ../../rcore-fs/rcore-fs-lfs/src/trace/file_generator.py $(OUT_DIR)
+	echo Start making lfs...
+	@./rcore-lfs-fuse --fs lfs $(IMG_FILE) $(OUT_DIR) zip
+	@qemu-img convert -f raw $(IMG_FILE) -O qcow2 $(QCOW_FILE)
+	@qemu-img resize $(QCOW_FILE) +1G
+
+test: dependency
+	@make build -C ../../rcore-fs/
+	# @rm -rf $(OUT_DIR)
+	# @python3 ../../rcore-fs/rcore-fs-lfs/src/trace/file_generator.py $(OUT_DIR)
+	# echo Start making lfs...
+	# @./rcore-lfs-fuse --fs lfs $(IMG_FILE) $(OUT_DIR) zip
+	@./rcore-lfs-fuse --fs lfs $(IMG_FILE) $(OUT_DIR) test
+	@qemu-img convert -f raw $(IMG_FILE) -O qcow2 $(QCOW_FILE)
+	@qemu-img resize $(QCOW_FILE) +1G
+
+test-sfs: dependency
+	@make build -C ../../rcore-fs/
+	@rm -rf $(OUT_DIR)-sfs
+	@python3 ../../rcore-fs/rcore-fs-lfs/src/trace/file_generator.py $(OUT_DIR)-sfs
+	echo Start making sfs...
+	@./rcore-lfs-fuse --fs sfs $(IMG_FILE) $(OUT_DIR)-sfs zip
+	@qemu-img convert -f raw $(IMG_FILE) -O qcow2 $(QCOW_FILE)
+	@qemu-img resize $(QCOW_FILE) +1G
+
 build: dependency
 	@cargo build
 	@make build -C ../../rcore-fs/
