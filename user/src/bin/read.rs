@@ -20,7 +20,7 @@ const TEXT: &'static str = "Hello world!\0";
 
 #[no_mangle]
 pub fn main() -> usize {
-    println!("read000");
+    println!("\nTask4: drop inode and reopen file 2");
     let read_fd = sys_open(FILE.as_ptr(), O_RDONLY);
     println!("ready to read file {}", FILE);
     let mut read = [0u8; BUFFER_SIZE];
@@ -32,7 +32,7 @@ pub fn main() -> usize {
         putchar(read[i] as char);
     }
     putchar('\n');
-    println!("read from file 'temp' successfully...");
+    println!("read from file '{}' successfully...", FILE);
     sys_close(read_fd as i32);
     0
 }

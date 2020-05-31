@@ -20,7 +20,7 @@ const TEXT: &'static str = "Hello world!\0";
 
 #[no_mangle]
 pub fn main() -> usize {
-    println!("writeappend000");
+    println!("\nTask1: write to a new file");
     let write_fd = sys_open(FILE.as_ptr(), O_WRONLY | O_CREAT);
     println!("ready to write file temp123");
     sys_write(write_fd as usize, TEXT.as_bytes(), TEXT.len());
@@ -30,7 +30,7 @@ pub fn main() -> usize {
     let read_fd = sys_open(FILE.as_ptr(), O_RDONLY);
     let mut read = [0u8; BUFFER_SIZE];
     sys_read(read_fd as usize, &mut read, BUFFER_SIZE); // Liyiwei: can &mut be used?
-    println!("read from file 'temp' successfully...");
+    println!("read from file 'temp123' successfully...");
     let len = (0..BUFFER_SIZE).find(|&i| read[i] as u8 == 0).unwrap();
     print!("content = ");
     for i in 0usize..len {

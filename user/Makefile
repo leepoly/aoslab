@@ -59,14 +59,13 @@ test: dependency
 	@qemu-img convert -f raw $(IMG_FILE) -O qcow2 $(QCOW_FILE)
 	@qemu-img resize $(QCOW_FILE) +1G
 
-test-sfs: dependency
+random-test-sfs: dependency
 	@make build -C ../../rcore-fs/
-	@rm -rf $(OUT_DIR)-sfs
-	@python3 ../../rcore-fs/rcore-fs-lfs/src/trace/file_generator.py $(OUT_DIR)-sfs
+	# @python3 ../../rcore-fs/rcore-fs-lfs/src/trace/file_generator.py $(OUT_DIR)-sfs
 	echo Start making sfs...
-	@./rcore-lfs-fuse --fs sfs $(IMG_FILE) $(OUT_DIR)-sfs zip
-	@qemu-img convert -f raw $(IMG_FILE) -O qcow2 $(QCOW_FILE)
-	@qemu-img resize $(QCOW_FILE) +1G
+	@./rcore-lfs-fuse --fs sfs $(IMG_FILE)-sfs $(OUT_DIR) zip
+	@qemu-img convert -f raw $(IMG_FILE)-sfs -O qcow2 $(QCOW_FILE)-sfs
+	@qemu-img resize $(QCOW_FILE)-sfs +1G
 
 build: dependency
 	@cargo build
@@ -76,7 +75,7 @@ build: dependency
 	@mkdir -p $(OUT_DIR)
 	@cp $(BIN_FILES) $(OUT_DIR)
 	@mkdir -p $(OUT_DIR)/test
-	@dd if=/dev/zero of=$(OUT_DIR)/test/temp123 bs=1k count=2
+	@dd if=/dev/zero of=$(OUT_DIR)/temp111 bs=1k count=2
 	echo Start making lfs...
 	@./rcore-lfs-fuse --fs lfs $(IMG_FILE) $(OUT_DIR) zip
 	@qemu-img convert -f raw $(IMG_FILE) -O qcow2 $(QCOW_FILE)
@@ -86,6 +85,11 @@ unzip: dependency
 	@make build -C ../../rcore-fs/
 	@rm -rf $(OUT_DIR2)
 	@./rcore-lfs-fuse --fs lfs $(IMG_FILE) $(OUT_DIR2) unzip
+
+unzip-sfs: dependency
+	@make build -C ../../rcore-fs/
+	@rm -rf $(OUT_DIR)-sfs
+	@./rcore-lfs-fuse --fs sfs $(IMG_FILE)-sfs $(OUT_DIR)-sfs unzip
 
 clean:
 	@cargo clean

@@ -16,13 +16,13 @@ use user::syscall::{
 
 const BUFFER_SIZE: usize = 20;
 const FILE: &'static str = "temp111\0";
-const TEXT: &'static str = "Hello world!\0";
+const TEXT: &'static str = "Hello world again!\0";
 
 #[no_mangle]
 pub fn main() -> usize {
-    println!("write000111");
+    println!("\nTask2: write to a existing file");
     // let write_fd = sys_open(FILE.as_ptr(), O_WRONLY | O_CREAT);
-    let write_fd = sys_open(FILE.as_ptr(), O_WRONLY | O_CREAT);
+    let write_fd = sys_open(FILE.as_ptr(), O_WRONLY);
     println!("ready to write file temp111");
     sys_write(write_fd as usize, TEXT.as_bytes(), TEXT.len());
     println!("write to file 'temp111' successfully...");
@@ -31,7 +31,7 @@ pub fn main() -> usize {
     let read_fd = sys_open(FILE.as_ptr(), O_RDONLY);
     let mut read = [0u8; BUFFER_SIZE];
     sys_read(read_fd as usize, &mut read, BUFFER_SIZE); // Liyiwei: can &mut be used?
-    println!("read from file 'temp' successfully...");
+    println!("read from file 'temp111' successfully...");
     let len = (0..BUFFER_SIZE).find(|&i| read[i] as u8 == 0).unwrap();
     print!("content = ");
     for i in 0usize..len {

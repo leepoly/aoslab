@@ -76,7 +76,6 @@ lazy_static! {
 
 /// 触发 [`static@ROOT_INODE`] 的初始化并打印根目录内容
 pub fn init() {
-    println!("content of ROOT directory:");
     ROOT_INODE.ls();
     println!("");
     println!("mod fs initialized");

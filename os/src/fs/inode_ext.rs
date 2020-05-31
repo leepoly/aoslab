@@ -14,6 +14,7 @@ pub trait INodeExt {
 impl INodeExt for dyn INode {
     fn ls(&self) {
         let mut id = 0;
+        println!("content of this directory:");
         while let Ok(name) = self.get_entry(id) {
             println!("{}", name);
             id += 1;

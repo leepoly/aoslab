@@ -58,7 +58,7 @@ pub(super) fn sys_open(path: *const u8, flags: u32) -> SyscallResult {
     let thread = PROCESSOR.get().current_thread();
     let fd = thread.alloc_fd() as isize;
     let cstr_path = unsafe { from_cstr(path) };
-    println!("path {:?} flags in sys_open: {:?}", cstr_path, flags as u32);
+    // println!("path {:?} flags in sys_open: {:?}", cstr_path, flags as u32);
     if flags & O_CREAT > 0 {
         ROOT_INODE
             .create(cstr_path, rcore_fs::vfs::FileType::File, 0o666)

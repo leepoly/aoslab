@@ -1,7 +1,7 @@
 [package]
 name = "os"
 version = "0.1.0"
-authors = ["涂轶翔 <tyx17@mails.tsinghua.edu.cn>", "赵成钢 <zhaocg17@mails.tsinghua.edu.cn>"]
+authors = ["Yiwei Li <liyw19@mails.tsinghua.edu.cn>", "Zhiyao Li <lizhiyao19@mails.tsinghua.edu.cn>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -20,8 +20,6 @@ virtio-drivers = { git = "https://github.com/rcore-os/virtio-drivers" }
 rcore-fs = { path = 'src/rcore-fs/rcore-fs' }
 rcore-fs-sfs = { path = 'src/rcore-fs/rcore-fs-sfs' }
 rcore-fs-lfs = { path = 'src/rcore-fs/rcore-fs-lfs' }
-# rcore-fs = { git = "https://github.com/rcore-os/rcore-fs"}
-# rcore-fs-sfs = { git = "https://github.com/rcore-os/rcore-fs"}
 xmas-elf = "0.7.0"
 
 # panic 时直接终止，因为我们没有实现堆栈展开的功能
